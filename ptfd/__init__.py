@@ -1,3 +1,6 @@
+from typing import Optional
+
+
 class PTFD:
     def __init__(self):
         self._adapters = {}
@@ -14,7 +17,10 @@ class PTFD:
     def login(self, platform: str):
         return self._get_adapter(platform).login()
 
-    def publish(self, platform: str, title: str, content: str, images: list = None):
+    def check_login(self, platform: str) -> bool:
+        return self._get_adapter(platform).check_login()
+
+    def publish(self, platform: str, title: str, content: str, images: Optional[list] = None):
         return self._get_adapter(platform).publish(title, content, images or [])
 
     def delete(self, platform: str, post_id: str):

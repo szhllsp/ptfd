@@ -19,6 +19,7 @@ class ToutiaoAdapter(BaseAdapter):
         page.goto(self.LOGIN_URL)
         print("请在打开的浏览器中扫码登录头条号...")
         page.wait_for_url("https://mp.toutiao.com/profile_v4/**", timeout=120000)
+        page.wait_for_selector('a[href*="toutiao.com/c/user"]', timeout=10000)
         print("登录成功！保存登录状态...")
         self.browser.save_context(context, "toutiao")
 
@@ -28,10 +29,13 @@ class ToutiaoAdapter(BaseAdapter):
         context = self.browser.get_context("toutiao")
         page = context.new_page()
         page.goto(self.LOGIN_URL)
-        time.sleep(3)
-        logged_in = "toutiao.com/c/user" in page.content()
-        page.close()
-        return logged_in
+        try:
+            page.wait_for_selector('a[href*="toutiao.com/c/user"]', timeout=5000)
+            page.close()
+            return True
+        except:
+            page.close()
+            return False
 
     def publish(self, title: str, content: str, images: Optional[list] = None) -> str:
         context = self.browser.get_context("toutiao")

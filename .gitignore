@@ -1,1 +1,8 @@
-*
+__pycache__/
+*.pyc
+data/cookies/*.json
+data/database.db
+.env
+*.egg-info/
+dist/
+build/
