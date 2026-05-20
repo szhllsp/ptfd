@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "ptfd"
+version = "0.1.0"
+description = "多平台内容发布与管理工具"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "click>=8.0",
+    "playwright>=1.40",
+    "pydantic>=2.0",
+]
+license = {text = "MIT"}
+
+[project.scripts]
+ptfd = "ptfd.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["ptfd*"]

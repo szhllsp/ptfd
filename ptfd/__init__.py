@@ -1,0 +1,34 @@
+from .adapters.toutiao import ToutiaoAdapter
+
+class PTFD:
+    def __init__(self):
+        self._adapters = {}
+
+    def _get_adapter(self, platform: str):
+        if platform not in self._adapters:
+            if platform == "toutiao":
+                self._adapters[platform] = ToutiaoAdapter()
+            else:
+                raise ValueError(f"Unsupported platform: {platform}")
+        return self._adapters[platform]
+
+    def login(self, platform: str):
+        return self._get_adapter(platform).login()
+
+    def publish(self, platform: str, title: str, content: str, images: list = None):
+        return self._get_adapter(platform).publish(title, content, images or [])
+
+    def delete(self, platform: str, post_id: str):
+        return self._get_adapter(platform).delete(post_id)
+
+    def get_messages(self, platform: str):
+        return self._get_adapter(platform).get_messages()
+
+    def get_comments(self, platform: str, post_id: str):
+        return self._get_adapter(platform).get_comments(post_id)
+
+    def reply_comment(self, platform: str, comment_id: str, text: str):
+        return self._get_adapter(platform).reply_comment(comment_id, text)
+
+    def get_stats(self, platform: str, post_id: str):
+        return self._get_adapter(platform).get_stats(post_id)
