@@ -1,4 +1,3 @@
-import sys
 import click
 from ptfd import PTFD
 

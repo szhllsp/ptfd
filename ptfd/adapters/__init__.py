@@ -1,5 +1,3 @@
-from .base import BaseAdapter
-
 def get_adapter(platform: str):
     if platform == "toutiao":
         from .toutiao import ToutiaoAdapter
