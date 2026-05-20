@@ -20,6 +20,9 @@ class PTFD:
     def check_login(self, platform: str) -> bool:
         return self._get_adapter(platform).check_login()
 
+    def list_articles(self, platform: str):
+        return self._get_adapter(platform).list_articles()
+
     def publish(self, platform: str, title: str, content: str, images: Optional[list] = None):
         return self._get_adapter(platform).publish(title, content, images or [])
 

@@ -16,6 +16,11 @@ class BaseAdapter(ABC):
         pass
 
     @abstractmethod
+    def list_articles(self) -> list[Stats]:
+        """获取文章列表及统计数据"""
+        pass
+
+    @abstractmethod
     def publish(self, title: str, content: str, images: Optional[list] = None) -> str:
         """发布内容，返回 post_id"""
         pass

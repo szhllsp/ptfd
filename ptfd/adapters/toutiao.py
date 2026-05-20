@@ -64,8 +64,72 @@ class ToutiaoAdapter(BaseAdapter):
         page.close()
         return post_url
 
+    def list_articles(self) -> list[Stats]:
+        """从管理页面获取所有文章及统计数据"""
+        context = self.browser.get_context("toutiao")
+        page = context.new_page()
+        page.goto("https://mp.toutiao.com/profile_v4/graphic/articles")
+        time.sleep(5)
+
+        articles = []
+        rows = page.locator("table tbody tr, .article-table tbody tr, [class*='table'] tbody tr")
+        count = rows.count()
+        for i in range(count):
+            row = rows.nth(i)
+            cells = row.locator("td")
+            if cells.count() < 4:
+                continue
+            post_id = row.get_attribute("data-id") or ""
+            title = cells.nth(1).inner_text() if cells.count() > 1 else ""
+            reads_text = cells.nth(3).inner_text() if cells.count() > 3 else "0"
+            reads = 0
+            for ch in reads_text.strip():
+                if ch.isdigit():
+                    reads = reads * 10 + int(ch)
+            articles.append(Stats(
+                post_id=post_id,
+                views=0,
+                reads=reads,
+                likes=0,
+                shares=0,
+                platform="toutiao"
+            ))
+        page.close()
+        return articles
+
     def delete(self, post_id: str) -> bool:
-        raise NotImplementedError
+        context = self.browser.get_context("toutiao")
+        page = context.new_page()
+        page.goto("https://mp.toutiao.com/profile_v4/graphic/articles")
+        time.sleep(5)
+
+        rows = page.locator("table tbody tr, .article-table tbody tr, [class*='table'] tbody tr")
+        count = rows.count()
+        found = False
+        for i in range(count):
+            row = rows.nth(i)
+            rid = row.get_attribute("data-id") or ""
+            if rid == post_id or post_id in row.inner_text():
+                delete_btn = row.locator("button:has-text('删除'), span:has-text('删除'), a:has-text('删除')")
+                if delete_btn.is_visible():
+                    delete_btn.click()
+                    time.sleep(2)
+                    confirm_btn = page.locator("button:has-text('确认'), button:has-text('确定'), .confirm-btn")
+                    if confirm_btn.is_visible():
+                        confirm_btn.click()
+                        time.sleep(3)
+                    found = True
+                break
+
+        page.close()
+        return found
+
+    def get_stats(self, post_id: str) -> Stats:
+        articles = self.list_articles()
+        for a in articles:
+            if a.post_id == post_id:
+                return a
+        return Stats(post_id=post_id, views=0, reads=0, likes=0, shares=0, platform="toutiao")
 
     def get_messages(self) -> list[Message]:
         raise NotImplementedError
@@ -74,7 +138,4 @@ class ToutiaoAdapter(BaseAdapter):
         raise NotImplementedError
 
     def reply_comment(self, comment_id: str, text: str) -> bool:
-        raise NotImplementedError
-
-    def get_stats(self, post_id: str) -> Stats:
         raise NotImplementedError
