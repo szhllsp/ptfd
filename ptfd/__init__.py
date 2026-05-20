@@ -1,5 +1,3 @@
-from .adapters.toutiao import ToutiaoAdapter
-
 class PTFD:
     def __init__(self):
         self._adapters = {}
@@ -7,6 +5,7 @@ class PTFD:
     def _get_adapter(self, platform: str):
         if platform not in self._adapters:
             if platform == "toutiao":
+                from .adapters.toutiao import ToutiaoAdapter
                 self._adapters[platform] = ToutiaoAdapter()
             else:
                 raise ValueError(f"Unsupported platform: {platform}")
