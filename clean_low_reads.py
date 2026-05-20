@@ -1,8 +1,10 @@
-"""登录头条号，删除阅读量低于 1000 的文章"""
-import sys
+"""登录头条号，删除阅读量低于 1000 的文章（复用同一页面）"""
+import sys, io
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 sys.path.insert(0, 'F:\\ptfd')
 
 from ptfd import PTFD
+from ptfd.browser import BrowserManager
 
 ptfd = PTFD()
 
@@ -10,11 +12,16 @@ if not ptfd.check_login("toutiao"):
     print("需要登录头条号...")
     ptfd.login("toutiao")
 
+browser = BrowserManager()
+context = browser.get_context("toutiao")
+page = context.new_page()
+
 print("正在获取文章列表...")
-articles = ptfd.list_articles("toutiao")
+articles = ptfd.list_articles("toutiao", page=page)
 
 if not articles:
-    print("没有找到文章，请确认已登录且头条号有文章")
+    print("没有找到文章")
+    page.close()
     sys.exit(1)
 
 to_delete = [a for a in articles if a.reads < 1000]
@@ -24,7 +31,8 @@ for a in to_delete:
     print(f"  删除: 阅读={a.reads} 评论={a.comments} id={a.post_id}")
     if a.title:
         print(f"    标题: {a.title[:40]}")
-    ok = ptfd.delete("toutiao", a.post_id)
-    print(f"  {'✓ 删除成功' if ok else '✗ 删除失败'}")
+    ok = ptfd.delete("toutiao", a.post_id, page=page)
+    print(f"  {'OK' if ok else 'FAIL'}")
 
+page.close()
 print("完成！")
