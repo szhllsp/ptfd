@@ -27,8 +27,9 @@ class BrowserManager:
         )
         return context
 
-    def save_context(self, context: BrowserContext, platform: str):
+    def save_context(self, context: BrowserContext, platform: str, close: bool = True):
         cookie_dir = os.path.join(DATA_DIR, "cookies")
         os.makedirs(cookie_dir, exist_ok=True)
         context.storage_state(path=os.path.join(cookie_dir, f"{platform}.json"))
-        context.close()
+        if close:
+            context.close()

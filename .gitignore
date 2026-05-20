@@ -6,3 +6,4 @@ data/database.db
 *.egg-info/
 dist/
 build/
+.venv/

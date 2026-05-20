@@ -71,10 +71,11 @@ def reply(platform, comment_id, text):
 @click.argument("platform", type=click.Choice(["toutiao", "baijiahao", "weixin"]))
 @click.argument("post_id")
 def stats(platform, post_id):
-    """查看展示量/阅读量"""
+    """查看展示量/阅读量/评论数"""
     s = ptfd.get_stats(platform, post_id)
     click.echo(f"展示量: {s.views}")
     click.echo(f"阅读量: {s.reads}")
+    click.echo(f"评论数: {s.comments}")
     click.echo(f"点赞: {s.likes}")
     click.echo(f"分享: {s.shares}")
 

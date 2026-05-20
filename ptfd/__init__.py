@@ -20,14 +20,14 @@ class PTFD:
     def check_login(self, platform: str) -> bool:
         return self._get_adapter(platform).check_login()
 
-    def list_articles(self, platform: str):
-        return self._get_adapter(platform).list_articles()
+    def list_articles(self, platform: str, page=None):
+        return self._get_adapter(platform).list_articles(page=page)
 
     def publish(self, platform: str, title: str, content: str, images: Optional[list] = None):
         return self._get_adapter(platform).publish(title, content, images or [])
 
-    def delete(self, platform: str, post_id: str):
-        return self._get_adapter(platform).delete(post_id)
+    def delete(self, platform: str, post_id: str, page=None):
+        return self._get_adapter(platform).delete(post_id, page=page)
 
     def get_messages(self, platform: str):
         return self._get_adapter(platform).get_messages()

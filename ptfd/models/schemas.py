@@ -21,8 +21,10 @@ class Comment(BaseModel):
 
 class Stats(BaseModel):
     post_id: str
-    views: int
-    reads: int
-    likes: int
-    shares: int
-    platform: str
+    title: str = ""
+    views: int = 0
+    reads: int = 0
+    comments: int = 0
+    likes: int = 0
+    shares: int = 0
+    platform: str = ""
