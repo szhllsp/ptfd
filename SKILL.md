@@ -13,7 +13,7 @@ inputs:
     values: ["toutiao", "baijiahao", "weixin"]
   action:
     description: 操作类型
-    values: ["login", "publish", "delete", "messages", "comments", "reply", "stats"]
+    values: ["login", "publish", "publish-micro", "delete", "messages", "comments", "reply", "stats"]
   title:
     description: 文章标题 (publish 时必填)
   content:
@@ -56,6 +56,18 @@ ptfd login weixin
 ptfd publish toutiao --title "标题" --content "正文内容"
 ptfd publish toutiao --title "标题" --content "正文" --image cover.jpg
 ```
+
+### 发布微头条（仅头条号）
+
+```bash
+ptfd publish-micro toutiao -c "正文" -i 图片.jpg \
+  --topic 关键词 --declare-first \
+  --source-network --source-internal --personal-view
+```
+
+- `--topic` 可多次使用，自动搜索热度最高的前 2 个话题添加
+- `--declare-first` 勾选「声明首发」
+- `--source-network` / `--source-internal` / `--personal-view` 勾选作品声明
 
 ### 查看评论
 

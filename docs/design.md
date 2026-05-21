@@ -46,7 +46,8 @@ F:\ptfd\
 
 ```
 ptfd login <platform>             首次登录（浏览器扫码/账号）
-ptfd publish <platform>           发布内容（从 stdin 或文件读取）
+ptfd publish <platform>           发布图文内容
+ptfd publish-micro <platform>     发布微头条（仅 toutiao，支持话题/声明首发/作品声明）
 ptfd delete <platform> <id>       删除指定文章
 ptfd messages <platform>          查看未读消息
 ptfd comments <platform> <id>     查看文章评论
@@ -56,6 +57,7 @@ ptfd ls                          列出所有已配置账号及状态
 ```
 
 参数 `<platform>` 取值: `toutiao`, `baijiahao`, `weixin`
+`publish-micro` 仅支持 `toutiao`
 
 ## 5. Python API 设计
 
@@ -67,8 +69,13 @@ ptfd = PTFD()
 # 登录
 ptfd.login("toutiao")                      # 打开浏览器手动登录
 
-# 发布
+# 发布图文
 post_id = ptfd.publish("toutiao", "标题", "内容", images=["1.jpg"])
+
+# 发布微头条（支持话题/声明首发/作品声明）
+url = ptfd.publish_micro("toutiao", "正文", images=["1.jpg"],
+    topics=["关键词1", "关键词2"], declare_first=True,
+    source_network=True, source_internal=True, personal_view=True)
 
 # 删除
 ptfd.delete("toutiao", post_id)
@@ -104,6 +111,8 @@ BaseAdapter (抽象基类)
 - 实现 8 个接口方法
 - 通过 Playwright 操作对应平台页面
 - 首次 login 后自动 Cookie 持久化
+
+ToutiaoAdapter 额外提供 `publish_micro()` 方法（非 BaseAdapter 接口），用于发布微头条。
 
 ## 7. 数据模型
 

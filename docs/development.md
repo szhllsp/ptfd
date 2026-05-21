@@ -14,12 +14,12 @@ CLI (cli.py) → PTFD 门面 (__init__.py) → BaseAdapter → 平台实现 (tou
 
 | 文件 | 职责 |
 |------|------|
-| `ptfd/cli.py` | Click CLI 入口，8 个子命令，纯 UI 层 |
-| `ptfd/__init__.py` | `PTFD` 门面类，适配器查找和缓存 |
-| `ptfd/browser.py` | `BrowserManager` 单例，管理 Playwright 生命周期 |
+| `ptfd/cli.py` | Click CLI 入口，9 个子命令（含 publish-micro），纯 UI 层 |
+| `ptfd/__init__.py` | `PTFD` 门面类，适配器查找和缓存，含 publish_micro 入口 |
+| `ptfd/browser.py` | `BrowserManager` 单例，管理 Playwright 生命周期，提供 close/reset |
 | `ptfd/cookie.py` | Cookie 路径和存在性检查工具函数 |
 | `ptfd/adapters/base.py` | `BaseAdapter` 抽象基类，定义 8 个接口 |
-| `ptfd/adapters/<platform>.py` | 各平台实现 |
+| `ptfd/adapters/<platform>.py` | 各平台实现，ToutiaoAdapter 额外含 publish_micro |
 | `ptfd/models/schemas.py` | `Message`、`Comment`、`Stats` 数据模型 |
 
 ---
