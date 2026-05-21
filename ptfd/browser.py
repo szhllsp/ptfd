@@ -33,3 +33,23 @@ class BrowserManager:
         context.storage_state(path=os.path.join(cookie_dir, f"{platform}.json"))
         if close:
             context.close()
+
+    def close(self):
+        if self._browser:
+            try:
+                self._browser.close()
+            except:
+                pass
+            self._browser = None
+        if self._playwright:
+            try:
+                self._playwright.stop()
+            except:
+                pass
+            self._playwright = None
+
+    @classmethod
+    def reset(cls):
+        if cls._instance is not None:
+            cls._instance.close()
+            cls._instance = None

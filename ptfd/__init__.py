@@ -26,6 +26,27 @@ class PTFD:
     def publish(self, platform: str, title: str, content: str, images: Optional[list] = None):
         return self._get_adapter(platform).publish(title, content, images or [])
 
+    def publish_micro(
+        self,
+        platform: str,
+        content: str,
+        images: Optional[list] = None,
+        topics: Optional[list] = None,
+        declare_first: bool = False,
+        source_network: bool = False,
+        source_internal: bool = False,
+        personal_view: bool = False,
+    ):
+        return self._get_adapter(platform).publish_micro(
+            content=content,
+            images=images or [],
+            topics=topics or [],
+            declare_first=declare_first,
+            source_network=source_network,
+            source_internal=source_internal,
+            personal_view=personal_view,
+        )
+
     def delete(self, platform: str, post_id: str, page=None):
         return self._get_adapter(platform).delete(post_id, page=page)
 

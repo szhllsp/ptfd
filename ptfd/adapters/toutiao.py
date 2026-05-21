@@ -9,6 +9,7 @@ from ptfd.models.schemas import Message, Comment, Stats
 class ToutiaoAdapter(BaseAdapter):
     LOGIN_URL = "https://mp.toutiao.com"
     PUBLISH_URL = "https://mp.toutiao.com/profile_v4/graphic/publish"
+    MICRO_PUBLISH_URL = "https://mp.toutiao.com/profile_v4/weitoutiao/publish"
     MANAGE_URL = "https://mp.toutiao.com/profile_v4/graphic/articles"
     MESSAGES_URL = "https://mp.toutiao.com/creator-home/message"
 
@@ -99,6 +100,127 @@ class ToutiaoAdapter(BaseAdapter):
             if confirm_btn.is_visible():
                 confirm_btn.click()
                 time.sleep(5)
+
+        post_url = page.url
+        page.close()
+        return post_url
+
+    def publish_micro(
+        self,
+        content: str,
+        images: Optional[list] = None,
+        topics: Optional[list] = None,
+        declare_first: bool = False,
+        source_network: bool = False,
+        source_internal: bool = False,
+        personal_view: bool = False,
+    ) -> str:
+        context = self.browser.get_context("toutiao")
+        page = context.new_page()
+        page.goto(self.MICRO_PUBLISH_URL, timeout=60000)
+        time.sleep(5)
+
+        drawer_mask = page.locator(".byte-drawer-mask").first
+        if drawer_mask.is_visible():
+            drawer_mask.click()
+            time.sleep(1)
+
+        page.wait_for_selector(".ProseMirror", timeout=20000)
+
+        editor = page.locator(".ProseMirror").first
+        editor.evaluate("(el, html) => { el.innerHTML = html; el.dispatchEvent(new Event('input', { bubbles: true })); }", content)
+        time.sleep(1)
+
+        if images:
+            img_btn = page.locator("button:has-text('图片')").first
+            if img_btn.is_visible():
+                img_btn.click()
+                time.sleep(2)
+                file_input = page.locator('input[type="file"]').first
+                if file_input.is_visible():
+                    file_input.set_input_files(images)
+                    time.sleep(5)
+                close_btn = page.locator(".byte-drawer-close, .byte-drawer-wrapper button:has-text('确定'), .byte-drawer-wrapper button:has-text('完成')").first
+                if close_btn.is_visible():
+                    close_btn.click()
+                    time.sleep(1)
+                else:
+                    page.keyboard.press("Escape")
+                    time.sleep(1)
+
+        if topics:
+            for topic in topics:
+                page.evaluate("""() => {
+                    const btns = document.querySelectorAll('button.syl-toolbar-button');
+                    for (const btn of btns) {
+                        if (btn.textContent.includes('话题')) {
+                            btn.dispatchEvent(new MouseEvent('click', {bubbles: true}));
+                            break;
+                        }
+                    }
+                }""")
+                time.sleep(1.5)
+                search_input = page.locator('input[placeholder*="搜索"]').first
+                if search_input.is_visible():
+                    search_input.fill(topic)
+                    time.sleep(2)
+                    page.evaluate("""(keyword) => {
+                        const items = document.querySelectorAll('section.forum-list-item');
+                        const results = [];
+                        items.forEach((item, idx) => {
+                            const textEl = item.querySelector('.forum-list-item-text');
+                            const countEl = item.querySelectorAll('div')[1];
+                            const countText = countEl ? countEl.textContent.trim() : '0';
+                            const count = parseFloat(countText.replace(/[^0-9.万]/g, '')) * (countText.includes('万') ? 10000 : 1);
+                            if (textEl && textEl.textContent.includes(keyword)) {
+                                results.push({idx, text: textEl.textContent, count});
+                            }
+                        });
+                        results.sort((a, b) => b.count - a.count);
+                        results.slice(0, 2).forEach(r => {
+                            items[r.idx].dispatchEvent(new MouseEvent('click', {bubbles: true}));
+                        });
+                    }""", topic)
+                    time.sleep(1)
+                page.keyboard.press("Escape")
+                time.sleep(0.5)
+
+        if declare_first:
+            first_cb = page.locator('text=头条首发').first
+            if first_cb.is_visible():
+                first_cb.click()
+                time.sleep(1)
+
+        if source_network:
+            cb = page.locator('label:has-text("取材网络")').first
+            if cb.is_visible():
+                cb.click()
+                time.sleep(0.5)
+
+        if source_internal:
+            cb = page.locator('label:has-text("引用站内")').first
+            if cb.is_visible():
+                cb.click()
+                time.sleep(0.5)
+
+        if personal_view:
+            cb = page.locator('label:has-text("个人观点，仅供参考")').first
+            if cb.is_visible():
+                cb.click()
+                time.sleep(0.5)
+
+        publish_btn = page.locator("button.publish-content").first
+        if publish_btn.is_visible():
+            publish_btn.click()
+            time.sleep(5)
+
+        try:
+            confirm_btn = page.locator("button:has-text('确认发布')").first
+            if confirm_btn.is_visible():
+                confirm_btn.click()
+                time.sleep(5)
+        except:
+            pass
 
         post_url = page.url
         page.close()

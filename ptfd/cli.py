@@ -29,6 +29,29 @@ def publish(platform, title, content, images):
     click.echo(f"发布成功: {post_id}")
 
 
+@main.command("publish-micro")
+@click.argument("platform", type=click.Choice(["toutiao"]))
+@click.option("-c", "--content", prompt=True, help="微头条正文")
+@click.option("-i", "--images", multiple=True, help="图片路径 (可多次使用)")
+@click.option("--topic", multiple=True, help="话题 (可多次使用，如 --topic 话题1 --topic 话题2)")
+@click.option("--declare-first", is_flag=True, help="勾选「声明首发」")
+@click.option("--source-network", is_flag=True, help="作品声明：取材网络")
+@click.option("--source-internal", is_flag=True, help="作品声明：引用站内")
+@click.option("--personal-view", is_flag=True, help="作品声明：个人观点仅供参考")
+def publish_micro(platform, content, images, topic, declare_first, source_network, source_internal, personal_view):
+    """发布微头条（仅支持 toutiao）"""
+    post_url = ptfd.publish_micro(
+        platform, content,
+        images=list(images) or None,
+        topics=list(topic) or None,
+        declare_first=declare_first,
+        source_network=source_network,
+        source_internal=source_internal,
+        personal_view=personal_view,
+    )
+    click.echo(f"微头条发布成功: {post_url}")
+
+
 @main.command()
 @click.argument("platform", type=click.Choice(["toutiao", "baijiahao", "weixin"]))
 @click.argument("post_id")
