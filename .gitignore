@@ -1,9 +1,15 @@
 __pycache__/
 *.pyc
-data/cookies/*.json
-data/database.db
+data/
 .env
 *.egg-info/
 dist/
 build/
 .venv/
+capture_api.py
+debug_publish.py
+explore_page.py
+find_confirm_btn.py
+publish_*.py
+test_ptfd_publish.py
+temp_*.txt
